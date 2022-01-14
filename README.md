@@ -16,7 +16,7 @@ In case of multiple core instances, one will be a leader and others are follower
 
 
 
-Each node should have own persistent storage (Azure disk). Suggested storage type is _Premium_LRS_ at least. We create AzureDisks and then use it from k8s neo4j nodes.  
+Each node should have own persistent storage (Azure disk). Suggested storage type is _Premium_LRS_ at least. We create AzureDisks and then use it from k8s neo4j nodes through k8s PersistentVolumeClaims.    
 The easiest way is to use helm v3 charts. 
 There are helm charts to deploy core nodes(__chart neo4j/neo4j-cluster-core__), as well as needed amount of read replicas(__neo4j/neo4j-cluster-read-replica__). 
 
@@ -24,7 +24,26 @@ There are helm charts to deploy core nodes(__chart neo4j/neo4j-cluster-core__), 
 
 Additionally, we might need to deploy __neo4j-cluster-headless-service__ to have an access from inside of k8s, and __neo4j/neo4j-cluster-loadbalancer__ to have an access from the outside of k8s cluster.  
 
+k8s resources used: ConfigMaps, StatefulSet for core nodes, Deployment for replicas, Service, ServiceAccount linked to cloud IAM etc
 
+## Autoscaling
+Scaling read replicas is relatively easy using HorizontalPodAutoscaler based on CPU load (needs minimum configuration)  
+Scaling core members __is not recommended__ (as it involves rebalancing the cluster and replicating the data):
+> Automated scaling applies only to read replicas. At this time we do not recommend automatic scaling of core members of the cluster at all, and core member scaling should be limited to special operations such as rolling upgrades, documented separately. 
+
+## Monitoring
+Neo4j supports prometheus metrics(regular k8s flow) - no problems expected  
+
+## Multi tennancy
+
+### Security
 
 ### side notes
 Clustering available only for Neo4j Enterprise Edition (paid)
+
+
+### resources
+Official documentation is pretty good
+https://neo4j.com/docs/operations-manual/current/clustering/introduction/
+https://neo4j.com/labs/neo4j-helm/1.0.0/operations/
+https://neo4j.com/docs/operations-manual/current/kubernetes/quickstart-cluster/server-setup/
