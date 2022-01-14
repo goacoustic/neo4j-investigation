@@ -29,17 +29,37 @@ k8s resources used: ConfigMaps, StatefulSet for core nodes, Deployment for repli
 ## Autoscaling
 Scaling read replicas is relatively easy using HorizontalPodAutoscaler based on CPU load (needs minimum configuration)  
 Scaling core members __is not recommended__ (as it involves rebalancing the cluster and replicating the data):
+> A store copy is a major operation, which may disrupt the availability of instances in the cluster.  
 > Automated scaling applies only to read replicas. At this time we do not recommend automatic scaling of core members of the cluster at all, and core member scaling should be limited to special operations such as rolling upgrades, documented separately. 
 
 ## Monitoring
 Neo4j supports prometheus metrics(regular k8s flow) - no problems expected  
 
-## Multi tennancy
+## Multi tennancy options
+1. Starting from version 4.0, Neo4j supports Multi Tenancy.
+> we can create and use more than one active database at the same time. This works in standalone and causal cluster scenarios and allows us to maintain multiple, separate graphs in one installation.
+Basically, it's multiple DBs with different URIs inside one Neo4j DBMS installation.  
+2. Another option is to have completely different clusters for each DB. This enables us to have independant scaling and full isolation.
+3. Also, Fabric is a way to store and retrieve data in multiple databases, whether they are on the same Neo4j DBMS or in multiple DBMSs:
+>
+a unified view of local and distributed data, accessible via a single client connection and user session  
+increased scalability for read/write operations, data volume and concurrency  
+predictable response time for queries executed during normal operations, a failover or other infrastructure changes  
+High Availability and No Single Point of Failure for large data volume.  
+Data Federation: the ability to access data available in distributed sources in the form of disjointed graphs.  
+Data Sharding: the ability to access data available in distributed sources in the form of a common graph partitioned on multiple databases.  
+
 
 ### Security
+Neo4j supprots custom auth providers (eg OpenID connect provider), which allows us to integrate frontend with DB directly.  
+Also, Neo4j supports fine-grained access control, so we can manage access for user role/specific user to Graph, sub-graph, Operation(read write property/relation) etc  
+__This RBAC options can be used in multi tenancy implementations__
+
 
 ### side notes
-Clustering available only for Neo4j Enterprise Edition (paid)
+Clustering, RBAC and other things are available only for Neo4j Enterprise Edition (paid)
+Suggested storage type is low latency SSD
+Suggested configuration of k8s AntiAffinity rules for core nodes to increase cluster stability
 
 
 ### resources
@@ -47,3 +67,6 @@ Official documentation is pretty good
 https://neo4j.com/docs/operations-manual/current/clustering/introduction/
 https://neo4j.com/labs/neo4j-helm/1.0.0/operations/
 https://neo4j.com/docs/operations-manual/current/kubernetes/quickstart-cluster/server-setup/
+https://neo4j.com/docs/operations-manual/current/fabric/introduction/
+https://medium.com/neo4j/reactive-multi-tenancy-with-neo4j-4-0-and-sdn-rx-d8ae0754c35
+
