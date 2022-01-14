@@ -56,13 +56,13 @@ Also, Neo4j supports fine-grained access control, so we can manage access for us
 __This RBAC options can be used in multi tenancy implementations__
 
 
-### side notes
+### Side notes
 Clustering, RBAC and other things are available only for Neo4j Enterprise Edition (paid)
 Suggested storage type is low latency SSD
 Suggested configuration of k8s AntiAffinity rules for core nodes to increase cluster stability
 
 
-### resources
+### Resources
 Official documentation is pretty good
 https://neo4j.com/docs/operations-manual/current/clustering/introduction/
 https://neo4j.com/labs/neo4j-helm/1.0.0/operations/
