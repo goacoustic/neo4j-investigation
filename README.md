@@ -20,16 +20,31 @@ The easiest way is to use helm v3 charts.
 There are helm charts to deploy core nodes(__chart neo4j/neo4j-cluster-core__), as well as needed amount of read replicas(__neo4j/neo4j-cluster-read-replica__). 
 
 ![image](https://user-images.githubusercontent.com/1872337/149521107-6b309911-6055-4d82-a462-6242ac0bb80b.png)
+(example of server side routing used)  
 
 Additionally, we might need to deploy __neo4j-cluster-headless-service__ to have an access from inside of k8s, and __neo4j/neo4j-cluster-loadbalancer__ to have an access from the outside of k8s cluster.  
 
 k8s resources used: __StatefulSet__ for core and replica nodes, __ServiceAccount__ to link to cloud IAM, __Service__ as load balancer, __HPA__ to scale replica nodes etc  
-
+  
+More details:  
+https://neo4j.com/docs/operations-manual/current/kubernetes/quickstart-cluster/access-outside-k8s/  
+https://neo4j.com/docs/operations-manual/current/kubernetes/accessing-cluster/  
 
 ## Networking
-Mainly, for external consumers, Neo4j cluster should expose 3 protocols - __Http:7474, https:7473 and bolt:7687__. Also, additional ports/protocls [are used under the hood](https://neo4j.com/docs/operations-manual/current/configuration/ports/)  
+Mainly, for external consumers, Neo4j cluster should expose 3 protocols - __Http:7474, https:7473 and bolt:7687__. Also, additional ports/protocls [are used under the hood (eg discovery, transactions, RAFT protocol etc](https://neo4j.com/docs/operations-manual/current/configuration/ports/)  
 
-![image](https://user-images.githubusercontent.com/1872337/149797376-f954cc04-8dff-490e-b710-48466d2488a9.png)
+Accessing cluster wiht neo4j:// URI scheme enables driver to use server-side routing. If a Neo4j Driver connects to this cluster member, then the Neo4j Driver sends all requests to that cluster member, and then cluster member [can re-route each request in case of necessity](https://neo4j.com/docs/operations-manual/current/clustering/internals/).  
+
+![image](https://user-images.githubusercontent.com/1872337/149797376-f954cc04-8dff-490e-b710-48466d2488a9.png)  
+
+To expose those ports in AKS deployment, by default k8s __service with type LoadBalancer__ is used. Basically, __we need to create one static IP address per cluster__ like _az network public-ip create_ and assign it to this Load balancer.   
+It's possible to use other network entitites, such as the __nginx-ingress__ controller, but they need to be configured to support TCP connections ([e g configuration for nginx](https://kubernetes.github.io/ingress-nginx/user-guide/exposing-tcp-udp-services/)). Also, additional configuration is required (Neo4j discovery addresses etc)  
+![image](https://user-images.githubusercontent.com/1872337/149803522-4063fe23-e793-4f50-80d3-02de434aee5c.png)
+
+Aditional info:  
+https://community.neo4j.com/t/cannot-connect-to-cluster-using-k8s-ingress/15476  
+https://github.com/neo4j-contrib/neo4j-helm/issues/42  
+https://community.neo4j.com/t/expose-helm-installed-neo4jj-using-ingress-nginx/20056  
 
 
 
