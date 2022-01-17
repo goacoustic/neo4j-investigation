@@ -62,9 +62,14 @@ Neo4j supports prometheus metrics(regular k8s flow), and Graphite and JMX - no s
 > we can create and use more than one active database at the same time. This works in standalone and causal cluster scenarios and allows us to maintain multiple, separate graphs in one installation.
 Basically, it's multiple DBs with different URIs inside one Neo4j DBMS installation.  
 2. Another option is to have completely different clusters for each DB. This enables us to have independant scaling and full isolation.
+3. Fabric - basically, it's a meta DB that allows us to join multiple disjoint graphs. Has 3 possible deployment configurations based on requirements:
+    - Development deployment (1 DBMS with data graphs and virtual meta graph)
+    - Cluster deployment with no single point of failure (production with HA - at least 2 Fabric DBMS and cluster with at least 3 core members to host disjoint graphs)
+    - Multi-cluster deployment (high scalability and availability with no single point of failure(miltiple Fabric instances, multiple data clusters)
 
 
-## Fabric
+
+## [Fabric](https://neo4j.com/docs/operations-manual/current/fabric/introduction/)
 is a way to store and retrieve data in multiple databases, whether they are on the same Neo4j DBMS or in multiple DBMSs, using a single Cypher query. Fabric achieves a number of desirable objectives:
 
 -   a unified view of local and distributed data, accessible via a single client connection and user session
