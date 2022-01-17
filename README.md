@@ -15,7 +15,6 @@ In case of multiple core instances, one will be a leader and others are follower
 ![image](https://user-images.githubusercontent.com/1872337/149520470-050d5923-c93e-4cf4-b5a8-b23682bd1dc5.png)
 
 
-
 Each node should have own persistent storage (Azure disk). Suggested storage type is _Premium_LRS_ at least. We create AzureDisks and then use it from k8s neo4j nodes through k8s PersistentVolumeClaims.    
 The easiest way is to use helm v3 charts. 
 There are helm charts to deploy core nodes(__chart neo4j/neo4j-cluster-core__), as well as needed amount of read replicas(__neo4j/neo4j-cluster-read-replica__). 
@@ -24,7 +23,15 @@ There are helm charts to deploy core nodes(__chart neo4j/neo4j-cluster-core__), 
 
 Additionally, we might need to deploy __neo4j-cluster-headless-service__ to have an access from inside of k8s, and __neo4j/neo4j-cluster-loadbalancer__ to have an access from the outside of k8s cluster.  
 
-k8s resources used: ConfigMaps, StatefulSet for core nodes, Deployment for replicas, Service, ServiceAccount linked to cloud IAM etc
+k8s resources used: __StatefulSet__ for core and replica nodes, __ServiceAccount__ to link to cloud IAM, __Service__ as load balancer, __HPA__ to scale replica nodes etc  
+
+
+## Networking
+Mainly, for external consumers, Neo4j cluster should expose 3 protocols - __Http:7474, https:7473 and bolt:7687__. Also, additional ports/protocls [are used under the hood](https://neo4j.com/docs/operations-manual/current/configuration/ports/)  
+
+![image](https://user-images.githubusercontent.com/1872337/149797376-f954cc04-8dff-490e-b710-48466d2488a9.png)
+
+
 
 ## Autoscaling
 Scaling read replicas is relatively easy using HorizontalPodAutoscaler based on CPU load (needs minimum configuration)  
@@ -33,7 +40,7 @@ Scaling core members __is not recommended__ (as it involves rebalancing the clus
 > Automated scaling applies only to read replicas. At this time we do not recommend automatic scaling of core members of the cluster at all, and core member scaling should be limited to special operations such as rolling upgrades, documented separately. 
 
 ## Monitoring
-Neo4j supports prometheus metrics(regular k8s flow) - no problems expected  
+Neo4j supports prometheus metrics(regular k8s flow), and Graphite and JMX - no significant problems expected  
 
 ## Multi tennancy options
 1. Starting from version 4.0, Neo4j supports Multi Tenancy.
@@ -68,5 +75,8 @@ https://neo4j.com/docs/operations-manual/current/clustering/introduction/
 https://neo4j.com/labs/neo4j-helm/1.0.0/operations/
 https://neo4j.com/docs/operations-manual/current/kubernetes/quickstart-cluster/server-setup/
 https://neo4j.com/docs/operations-manual/current/fabric/introduction/
+https://neo4j.com/docs/operations-manual/current/configuration/network-architecture/
+https://github.com/neo4j-contrib/neo4j-helm/blob/master/templates/discovery-lb.yaml
+https://neo4j.com/labs/neo4j-helm/1.0.0/externalexposure/
 https://medium.com/neo4j/reactive-multi-tenancy-with-neo4j-4-0-and-sdn-rx-d8ae0754c35
 
