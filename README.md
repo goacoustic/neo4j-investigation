@@ -12,7 +12,7 @@ In case of multiple core instances, one will be a leader and others are follower
 
 
 ## AKS deployment
-![image](https://user-images.githubusercontent.com/1872337/149520470-050d5923-c93e-4cf4-b5a8-b23682bd1dc5.png)
+![image](https://user-images.githubusercontent.com/1872337/149520470-050d5923-c93e-4cf4-b5a8-b23682bd1dc5.png) (not strictly bound to GCP)
 
 
 Each node should have own persistent storage (Azure disk). Suggested storage type is _Premium_LRS_ at least. We create AzureDisks and then use it from k8s neo4j nodes through k8s PersistentVolumeClaims.    
@@ -62,14 +62,26 @@ Neo4j supports prometheus metrics(regular k8s flow), and Graphite and JMX - no s
 > we can create and use more than one active database at the same time. This works in standalone and causal cluster scenarios and allows us to maintain multiple, separate graphs in one installation.
 Basically, it's multiple DBs with different URIs inside one Neo4j DBMS installation.  
 2. Another option is to have completely different clusters for each DB. This enables us to have independant scaling and full isolation.
-3. Also, Fabric is a way to store and retrieve data in multiple databases, whether they are on the same Neo4j DBMS or in multiple DBMSs:
->
-a unified view of local and distributed data, accessible via a single client connection and user session  
-increased scalability for read/write operations, data volume and concurrency  
-predictable response time for queries executed during normal operations, a failover or other infrastructure changes  
-High Availability and No Single Point of Failure for large data volume.  
-Data Federation: the ability to access data available in distributed sources in the form of disjointed graphs.  
-Data Sharding: the ability to access data available in distributed sources in the form of a common graph partitioned on multiple databases.  
+
+
+## Fabric
+is a way to store and retrieve data in multiple databases, whether they are on the same Neo4j DBMS or in multiple DBMSs, using a single Cypher query. Fabric achieves a number of desirable objectives:
+
+-   a unified view of local and distributed data, accessible via a single client connection and user session
+
+-   increased scalability for read/write operations, data volume and concurrency
+
+-   predictable response time for queries executed during normal operations, a failover or other infrastructure changes
+
+-   High Availability and No Single Point of Failure for large data volume.
+
+In practical terms, Fabric provides the infrastructure and tooling for:
+
+-   **Data Federation**: the ability to access data available in distributed sources in the form of **disjointed graphs**.
+
+-   **Data Sharding**: the ability to access data available in distributed sources in the form of a **common graph partitioned on multiple databases**.
+
+With Fabric, a Cypher query can store and retrieve data in multiple federated and sharded graphs.
 
 
 ### Security
