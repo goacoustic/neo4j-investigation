@@ -88,6 +88,8 @@ In practical terms, Fabric provides the infrastructure and tooling for:
 
 With Fabric, a Cypher query can store and retrieve data in multiple federated and sharded graphs.
 
+Note: Fabric DBMS cannot be clustered, so each Fabric instance will be in single mode.
+
 
 ### Security
 Neo4j supprots custom auth providers (eg OpenID connect provider), which allows us to integrate frontend with DB directly.  
