@@ -104,6 +104,8 @@ Suggested configuration of k8s AntiAffinity rules for core nodes to increase clu
 
 
 ### Resources
+https://neo4j.com/blog/roadmap-enterprise-graph-strategy/
+
 Official documentation is pretty good
 https://neo4j.com/docs/operations-manual/current/clustering/introduction/
 https://neo4j.com/labs/neo4j-helm/1.0.0/operations/
