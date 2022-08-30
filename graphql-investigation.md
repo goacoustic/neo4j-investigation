@@ -1,3 +1,35 @@
+# Problem:
+We have multiple data owners. Each data owner team has their own data source. 
+Mainly, data source is different Cosmos DB instances, but some of them are REST API.
+
+## We want to find a solution that could: 
+1. Provide unified interface for queriyng data from different data sources
+2. Do we need to have possiblity to merge entities in one query?
+<details>
+  <summary>Example of diffrent entities</summary>
+
+  ```javascript
+  // example - one entity for facade, but data loaded from different data sources
+type Consumer {
+    Id: String,
+    Appointments: Appointment[], // loads from AppointmentService CosmosDB
+    DigitalExperience: DigitalExperience[], // loads from analytics data source
+    MedicationsHistory: MedicationsHistory[] // loads from MedicationsHistory API
+}
+  ```
+  
+</details>
+
+3. Data schema should be easily changable by data owners
+    - adding new data points into the data store
+    - ensuring backward compatibility of changes(no field renaming/removing)
+4. Data goverance
+    - Security
+        - Field based access rights mechanism?
+        - Geolocation based filtering?
+        - Who and how determines security rules?
+        - PHI requirements are out of scope
+
 
 ## Things that GraphQL Gateway API should support:
 
@@ -70,7 +102,7 @@
 * **[Prisma](https://github.com/prisma/prisma)**
      - just orm, not exactly what we need
 * **[Hot chocolate](https://chillicream.com/docs/hotchocolate/distributed-schema/schema-federations)** 
-    - dotnet implementation of the server, not an API gateway
+    - dotnet implementation of the server, not an API gateway. Has remote schema possibility thou.
 * **[Braid](https://bitbucket.org/atlassian/graphql-braid)** 
     - java implementation of library that can merge GraphQL schemas. Not exactly what we need.
 * **https://github.com/pipedrive/graphql-schema-registry**
